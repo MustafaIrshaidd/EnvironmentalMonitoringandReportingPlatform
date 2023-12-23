@@ -5,7 +5,7 @@ import databaseConnection from "./services/DatabaseConnection.js";
 import userRouter from "./routes/user.route.js";
 import dataCollectionRouter from "./routes/dataCollection.router.js";
 import resourceRouter from "./routes/educationalResources.route.js";
-
+import communityReportsRouter from "./routes/communityReports.router.js";
 
 // Create an Express app
 const app = express();
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(`/users`, userRouter);
 app.use(`/dataCollection`, dataCollectionRouter);
 app.use(`/resources`, resourceRouter);
-
+app.use(`/reports/community`, communityReportsRouter);
 
 // Start the Express server
 app.listen(3000, () => {

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import citiesEnum from "./Enums/citiesEnum";
 
 const Schema = mongoose.Schema;
 const reportSchema = new Schema({
@@ -22,11 +21,10 @@ const reportSchema = new Schema({
   },
   location: {
     type: String,
-    enum: citiesEnum,
     required: true,
   },
 });
 
-const CommunityReport = mongoose.model("community_report", reportSchema);
+const CommunityReports = mongoose.model("community_report", reportSchema);
 
-export default CommunityReport;
+export default CommunityReports;
