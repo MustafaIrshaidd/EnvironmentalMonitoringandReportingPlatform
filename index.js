@@ -6,7 +6,6 @@ import userRouter from "./routes/user.route.js";
 import dataCollectionRouter from "./routes/dataCollection.router.js";
 import resourceRouter from "./routes/educationalResources.route.js";
 
-
 // Create an Express app
 const app = express();
 app.use(cors());
@@ -18,8 +17,7 @@ app.use(express.json());
 // Routes
 app.use(`/users`, userRouter);
 app.use(`/dataCollection`, dataCollectionRouter);
-app.use(`/resources`, resourceRouter);
-
+app.use(`/resources/educational`, resourceRouter);
 
 // Start the Express server
 app.listen(3000, () => {
