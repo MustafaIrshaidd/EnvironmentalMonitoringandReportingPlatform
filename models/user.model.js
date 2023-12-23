@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -32,13 +34,14 @@ const userSchema = new mongoose.Schema({
   ],
   interests: [
     {
-      type: String,
+      intreset: {
+        type: String,
+      },
     },
   ],
   connections: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      connectionId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
   ],
   sustainability_score: {
