@@ -12,10 +12,28 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+
   password: {
     type: String,
     required: true,
   },
+  alerts:[
+{
+  alert_type:{
+    type: String,
+    required: true,
+  },
+  threshold:{
+    type: Number,
+    required: true,
+  },
+  isActive:{
+    type: Boolean,
+    default: false,
+  },
+}
+
+  ],
   contributions: [
     {
       data_type: {
