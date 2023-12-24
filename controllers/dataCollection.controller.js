@@ -47,9 +47,17 @@ const dataCollectionController = {
       if (user) {
         user.sustainability_score += 10;
         user.contributions.push(dataCollectionToAdd);
+        user.alerts.forEach((alert) => {
+            if(alert.alert_type.startsWith(data_type) && value >= alert.threshold){
+                alert.isActive = true;
+            }
+            if(alert.alert_type.startsWith(data_type) && value < alert.threshold){
+                alert.isActive = false;
+            }
+        })
         await user.save();
+
       } else {
-        // Handle the case where the user with the given ID is not found
         return res.status(404).send("User not found");
       }
 
@@ -91,9 +99,8 @@ const dataCollectionController = {
   async updateDataCollectionByID(req, res) {
     try {
       const { data_type, value } = req.body;
-      const updatedDataCollection = await DataCollection.findByIdAndUpdate(
+      const updatedDataCollection = await DataCollection.findById(
         req.params.id,
-        { data_type, value }
       );
       if (!updatedDataCollection) {
         return res.status(404).send("Collection not found");
@@ -107,11 +114,21 @@ const dataCollectionController = {
           (updatedDataCollection) =>
             updatedDataCollection._id.toString() === req.params.id
         );
+        console.log(existingIndex);
 
-        // If the existing DataCollection is found, remove it
         if (existingIndex !== -1) {
           user.contributions.splice(existingIndex, 1);
+          updatedDataCollection.data_type = data_type;
+            updatedDataCollection.value = value;
           user.contributions.push(updatedDataCollection);
+          user.alerts.forEach((alert) => {
+            if(alert.alert_type.startsWith(data_type) && value >= alert.threshold){
+                alert.isActive = true;
+            }
+            if(alert.alert_type.startsWith(data_type)  && value < alert.threshold){
+                alert.isActive = false;
+            }
+        })
           await user.save();
         }
         res.status(201).send(updatedDataCollection);

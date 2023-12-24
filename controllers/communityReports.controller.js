@@ -1,5 +1,6 @@
 // Import necessary modules
 import CommunityReport from "../models/communityReports.model.js";
+import User from "../models/user.model.js";
 
 const communityReportsController = {
   // Get all community reports
@@ -40,6 +41,10 @@ const communityReportsController = {
         created_at: new Date(),
       });
       const savedReport = await newReport.save();
+      const user = await User.findById(user_id);
+      if (user) {
+        user.sustainability_score+=20;
+      }
       res.status(201).json(savedReport);
     } catch (error) {
       console.error(error);

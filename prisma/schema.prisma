@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// user.prisma
+
+model User {
+  id Int        @id @default(autoincrement())
+  username String @unique
+  name String
+  password String
+  sustainability_score Int @default(0)
+  created_at DateTime @default(now())
+
+  alerts Alert[]
+  contributions Data[]
+  interests Interest[]
+  connections Connection[]
+  communityReports CommunityReport[]
+
+}
+
+model Alert {
+  id Int        @id @default(autoincrement())
+  alert_type String
+  threshold Int
+  isActive Boolean @default(false)
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
+
+
+model Interest {
+  id Int        @id @default(autoincrement())
+  interest String
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Connection {
+  id Int        @id @default(autoincrement())
+  connectionId Int
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
+
+// data.prisma
+
+model Data {
+  id Int        @id @default(autoincrement())
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  data_type String
+  value Int
+  created_at DateTime @default(now())
+}
+// communityReports.prisma
+
+model CommunityReport {
+  id Int        @id @default(autoincrement())
+  user_id Int
+  user User? @relation(fields: [user_id], references: [id])
+  report_type String
+  description String
+  created_at DateTime
+  location String
+}
+
+

@@ -1,15 +1,20 @@
 import User from "../models/user.model.js";
 import mongoose from "mongoose";
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 const UserController = {
   // Get a user by ID
   async getUserByID(req, res) {
     try {
-      const user = await User.findById(req.params.id);
-      if (!user) {
+      console.log("UserId: ", );	
+      const userFromPrisma = await prisma.user.findUnique({where: {id: parseInt(req.params.id)}});
+      //const user = await User.findById(req.params.id);
+      if (!userFromPrisma) {
         return res.status(404).send("User not found");
       }
-      res.send(user);
+      res.send(userFromPrisma);
     } catch (error) {
       res.status(500).send("Internal server error");
     }
@@ -19,12 +24,15 @@ const UserController = {
   async addUser(req, res) {
     try {
       const { username, name, password } = req.body;
-      const user = new User({
-        username,
-        name,
-        password,
-      });
-      await user.save();
+    
+     const user= await prisma.user.create({
+        data: {
+          username,
+          name,
+          password,
+          created_at: new Date(Date.now()),
+        }});
+
       res.status(201).send(user);
     } catch (error) {
       res.status(400).send("Invalid request body");
@@ -34,11 +42,11 @@ const UserController = {
   // Delete a user by ID
   async deleteUserByID(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.params.id);
-      if (!user) {
+      const userFromPrisma = await prisma.user.delete({where: {id: parseInt(req.params.id)}});
+      if (!userFromPrisma) {
         return res.status(404).send("User not found");
       }
-      res.send(user);
+      res.send(userFromPrisma);
     } catch (error) {
       res.status(500).send("Internal server error");
     }
@@ -48,15 +56,11 @@ const UserController = {
   async updateUserByID(req, res) {
     try {
       const { username, name, password } = req.body;
-      const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-        username,
-        name,
-        password,
-      });
-      if (!updatedUser) {
+      const updatedUserFromPrisma = await prisma.user.update({where: {id: parseInt(req.params.id)}, data: {username, name, password}});
+      if (!updatedUserFromPrisma) {
         return res.status(404).send("User not found");
       }
-      res.send(updatedUser);
+      res.send(updatedUserFromPrisma);
     } catch (error) {
       res.status(400).send("Invalid request body");
     }
@@ -66,13 +70,9 @@ const UserController = {
   async addInterest(req, res) {
     try {
       const { intreset } = req.body;
-      const user = await User.findById(req.params.id);
-
-      if (user) {
-        const newInterest = { intreset }; // Create a new interest object
-        user.interests.push(newInterest);
-        await user.save();
-        res.status(201).send(newInterest);
+      const newIntrest = await prisma.Interest.create({data: {interest: intreset , userId: parseInt(req.params.id)}});
+      if (newIntrest) {
+        res.status(201).send(newIntrest);
       } else {
         return res.status(404).send("User not found");
       }
@@ -84,20 +84,13 @@ const UserController = {
   // Delete an interest by ID
   async deleteInterest(req, res) {
     try {
-      const user = await User.findById(req.params.id);
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-      const { interestId } = req.params;
-      const index = user.interests.findIndex(
-        (interest) => interest._id.toString() === interestId
-      );
-      if (index === -1) {
-        return res.status(404).send("Interest not found");
-      }
-      user.interests.splice(index, 1);
-      await user.save();
+      const intreset=await prisma.interest.delete({where: {id: parseInt(req.params.interestId)}});
       res.send({ message: "Interest deleted successfully" });
+
+      if (!intreset) {
+        return res.status(404).send("intrest not found");
+      }
+      
     } catch (error) {
       res.status(500).send("Internal server error");
     }
@@ -106,22 +99,13 @@ const UserController = {
   // Update an interest by ID
   async updateInterest(req, res) {
     try {
-      const { interest } = req.body;
-      const user = await User.findById(req.params.id);
-      if (!user) {
-        return res.status(404).send("User not found");
+      const { intreset } = req.body;
+      const intresetToUpdate=await prisma.interest.update({where: {id: parseInt(req.params.interestId)}, data: {interest:intreset}});
+      if (!intresetToUpdate) {
+        return res.status(404).send("intrest not found");
       }
-      const { interestId } = req.params;
-      const existingInterest = user.interests.find(
-        (interest) => interest._id.toString() === interestId
-      );
-      if (!existingInterest) {
-        return res.status(404).send("Interest not found");
-      }
-      existingInterest.intreset = interest;
-      await user.markModified("interests");
-      await user.save();
-      res.send(existingInterest);
+     
+      res.send(intresetToUpdate);
     } catch (error) {
       res.status(400).send("Invalid request body");
     }
