@@ -9,7 +9,7 @@ const communityReportsController = {
   // Get all community reports
   getAllCommunityReports: async (req, res) => {
     try {
-      const reports = await CommunityReport.find();
+      const reports = await prisma.communityReport.findMany();
       res.json(reports);
     } catch (error) {
       console.error(error);
@@ -20,7 +20,9 @@ const communityReportsController = {
   // Get community report by ID
   getCommunityReportByID: async (req, res) => {
     try {
-      const report = await CommunityReport.findById(req.params.id);
+      const report = await prisma.communityReport.findUnique({
+        where: { id: parseInt(req.params.id) },
+      });
       if (!report) {
         return res.status(404).json({ error: "Community report not found" });
       }
