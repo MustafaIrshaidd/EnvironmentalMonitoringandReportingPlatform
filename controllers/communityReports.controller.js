@@ -12,7 +12,6 @@ const communityReportsController = {
       const reports = await prisma.communityReport.findMany();
       res.json(reports);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -28,7 +27,6 @@ const communityReportsController = {
       }
       res.json(report);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -50,7 +48,6 @@ const communityReportsController = {
       });
       res.status(201).json(newReport);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -61,13 +58,12 @@ const communityReportsController = {
       const deletedReport = await prisma.communityReport.delete({
         where: { id: parseInt(req.params.id) },
       });
-      
+
       if (!deletedReport) {
         return res.status(404).json({ error: "Community report not found" });
       }
       res.json(deletedReport);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -75,16 +71,23 @@ const communityReportsController = {
   // Update community report by ID
   updateCommunityReportByID: async (req, res) => {
     try {
-      const updatedReport = await CommunityReport.findByIdAndUpdate(
-        req.params.id,
-        { $set: req.body }
-      );
+      const { report_type, description, location } = req.body;
+
+      const updatedReport = await prisma.communityReport.update({
+        where: { id: parseInt(req.params.id) },
+        data: {
+          report_type,
+          description,
+          location,
+        },
+      });
+
       if (!updatedReport) {
         return res.status(404).json({ error: "Community report not found" });
       }
+
       res.json(updatedReport);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
