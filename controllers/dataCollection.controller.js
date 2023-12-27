@@ -1,5 +1,7 @@
 import DataCollection from "../models/dataCollection.model.js";
 import User from "../models/user.model.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const dataCollectionController = {
   // Get a dataCollection by ID
@@ -33,33 +35,54 @@ const dataCollectionController = {
   async adddataCollection(req, res) {
     try {
       const { data_type, value } = req.body;
-      const created_at = Date.now();
-      const user_id = req.params.id;
-      const dataCollectionToAdd = new DataCollection({
-        data_type,
-        value,
-        created_at,
-        user_id,
+      const created_at = new Date();
+      const user_id = parseInt(req.params.id);
+
+      const dataCollectionToAdd = await prisma.data.create({
+        data: {
+          data_type,
+          value,
+          created_at,
+          user: {
+            connect: {
+              id: user_id,
+            },
+          },
+        },
       });
-      await dataCollectionToAdd.save();
-      const user = await User.findById(user_id);
+      const user = await prisma.user.findUnique({
+        where: {
+          id: user_id,
+        },
+      });
 
-      if (user) {
-        user.sustainability_score += 10;
-        user.contributions.push(dataCollectionToAdd);
-        user.alerts.forEach((alert) => {
-            if(alert.alert_type.startsWith(data_type) && value >= alert.threshold){
-                alert.isActive = true;
-            }
-            if(alert.alert_type.startsWith(data_type) && value < alert.threshold){
-                alert.isActive = false;
-            }
-        })
-        await user.save();
-
-      } else {
+      if (!user) {
         return res.status(404).send("User not found");
       }
+      console.log(user.sustainability_score);
+      const newScore = user.sustainability_score + 10;
+      console.log(newScore);
+
+      await prisma.user.update({
+        where: {
+          id: user_id,
+        },
+        data: {
+          sustainability_score: newScore,
+        },
+      });
+
+      await prisma.alert.update({
+        where: {
+          alert_type: data_type,
+          threshold: {
+            lt: threshold,
+          },
+        },
+        data: {
+          isActive: true,
+        },
+      });
 
       res.status(201).send(dataCollectionToAdd);
     } catch (error) {
@@ -100,7 +123,7 @@ const dataCollectionController = {
     try {
       const { data_type, value } = req.body;
       const updatedDataCollection = await DataCollection.findById(
-        req.params.id,
+        req.params.id
       );
       if (!updatedDataCollection) {
         return res.status(404).send("Collection not found");
@@ -119,16 +142,22 @@ const dataCollectionController = {
         if (existingIndex !== -1) {
           user.contributions.splice(existingIndex, 1);
           updatedDataCollection.data_type = data_type;
-            updatedDataCollection.value = value;
+          updatedDataCollection.value = value;
           user.contributions.push(updatedDataCollection);
           user.alerts.forEach((alert) => {
-            if(alert.alert_type.startsWith(data_type) && value >= alert.threshold){
-                alert.isActive = true;
+            if (
+              alert.alert_type.startsWith(data_type) &&
+              value >= alert.threshold
+            ) {
+              alert.isActive = true;
             }
-            if(alert.alert_type.startsWith(data_type)  && value < alert.threshold){
-                alert.isActive = false;
+            if (
+              alert.alert_type.startsWith(data_type) &&
+              value < alert.threshold
+            ) {
+              alert.isActive = false;
             }
-        })
+          });
           await user.save();
         }
         res.status(201).send(updatedDataCollection);
