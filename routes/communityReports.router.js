@@ -17,7 +17,7 @@ communityReportsRouter.get(
 
 // POST Route
 communityReportsRouter.post(
-  "/users/:user_id",
+  "/users/:userId",
   communityReportsController.addCommunityReport
 );
 
