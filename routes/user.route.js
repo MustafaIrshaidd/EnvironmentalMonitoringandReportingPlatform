@@ -9,7 +9,7 @@ const userRouter = express.Router();
 
 // GET Routes
 userRouter.get("/:id",authMiddleWare.Validate,UserController.getUserByID);
-userRouter.get("/:id/alerts/:alert_id",authMiddleWare.Validate, AlertController.getAlertByID);
+userRouter.get("/:userid/alerts/:id",authMiddleWare.Validate, AlertController.getAlertByID);
 
 // POST Route
 userRouter.post("/", UserController.addUser);
@@ -17,11 +17,11 @@ userRouter.post("/:id/alerts",authMiddleWare.Validate,AlertController.addAlertFo
 
 // DELETE Route
 userRouter.delete("/:id",authMiddleWare.Validate, UserController.deleteUserByID);
-userRouter.delete("/:id/alerts/:alert_id", authMiddleWare.Validate,AlertController.deleteAlertByID);
+userRouter.delete("/:userid/alerts/:id", authMiddleWare.Validate,AlertController.deleteAlertByID);
 
 // PUT Route
 userRouter.put("/:id", authMiddleWare.Validate,UserController.updateUserByID);
-userRouter.put("/:id/alerts/:alert_id", authMiddleWare.Validate,AlertController.updateAlertByID);
+userRouter.put("/:userid/alerts/:id", authMiddleWare.Validate,AlertController.updateAlertByID);
 
 // Interests Routes
 userRouter.post("/:id/interests",authMiddleWare.Validate,UserController.addInterest);
