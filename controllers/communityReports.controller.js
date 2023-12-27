@@ -58,9 +58,10 @@ const communityReportsController = {
   // Delete community report by ID
   deleteCommunityReportByID: async (req, res) => {
     try {
-      const deletedReport = await CommunityReport.findByIdAndDelete(
-        req.params.id
-      );
+      const deletedReport = await prisma.communityReport.delete({
+        where: { id: parseInt(req.params.id) },
+      });
+      
       if (!deletedReport) {
         return res.status(404).json({ error: "Community report not found" });
       }
