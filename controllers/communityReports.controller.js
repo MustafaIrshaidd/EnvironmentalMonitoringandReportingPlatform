@@ -1,6 +1,9 @@
 // Import necessary modules
 import CommunityReport from "../models/communityReports.model.js";
 import User from "../models/user.model.js";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const communityReportsController = {
   // Get all community reports
@@ -31,21 +34,19 @@ const communityReportsController = {
   // Add a new community report
   addCommunityReport: async (req, res) => {
     try {
-      const { user_id } = req.params;
+      const { userId } = req.params;
       const { report_type, description, location } = req.body;
-      const newReport = new CommunityReport({
-        user_id,
-        report_type,
-        description,
-        location,
-        created_at: new Date(),
+      const user_id = parseInt(userId);
+      const newReport = await prisma.communityReport.create({
+        data: {
+          user_id,
+          report_type,
+          description,
+          created_at: new Date(Date.now()),
+          location,
+        },
       });
-      const savedReport = await newReport.save();
-      const user = await User.findById(user_id);
-      if (user) {
-        user.sustainability_score+=20;
-      }
-      res.status(201).json(savedReport);
+      res.status(201).json(newReport);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
