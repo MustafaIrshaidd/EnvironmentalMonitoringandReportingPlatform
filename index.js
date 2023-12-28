@@ -23,7 +23,7 @@ app.use(`/dataCollection`, dataCollectionRouter);
 app.use(`/resources`, resourceRouter);
 app.use(`/reports/community`, communityReportsRouter);
 app.use(`/auth`, AuthRouter);
-app.use(`/connections`, connectionRouter);
+app.use(`/connection`, connectionRouter);
 
 
 // Start the Express server

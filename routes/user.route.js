@@ -72,19 +72,21 @@ userRouter.delete(
   UserController.deleteConnection
 );
 
-// GET Routes
+// GET User Connection Routes
 userRouter.get(
   "/:id/connection",
   authMiddleWare.Validate,
   connectionController.getUserConnections
 );
 
-// POST Routes
+// POST User Connection Routes
 userRouter.post(
   "/:id/connection",
   authMiddleWare.Validate,
   connectionController.addUserConnection
 );
+
+
 
 // Export the router
 export default userRouter;

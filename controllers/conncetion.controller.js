@@ -49,6 +49,22 @@ const connectionController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+
+  // Delete A User Connection
+  deleteConnection: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedConnection = await prisma.connection.delete({
+        where: {
+          id: parseInt(id),
+        },
+      });
+      res.status(201).json(deletedConnection);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
 };
 
 export default connectionController;
