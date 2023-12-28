@@ -7,6 +7,7 @@ import dataCollectionRouter from "./routes/dataCollection.router.js";
 import resourceRouter from "./routes/educationalResources.route.js";
 import communityReportsRouter from "./routes/communityReports.router.js";
 import AuthRouter from "./routes/auth.router.js";
+import connectionRouter from "./routes/connection.router.js";
 
 // Create an Express app
 const app = express();
@@ -22,6 +23,7 @@ app.use(`/dataCollection`, dataCollectionRouter);
 app.use(`/resources`, resourceRouter);
 app.use(`/reports/community`, communityReportsRouter);
 app.use(`/auth`, AuthRouter);
+app.use(`/connection`, connectionRouter);
 
 
 // Start the Express server
